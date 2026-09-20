@@ -34,6 +34,15 @@ public interface PolicyRenewalRepository extends JpaRepository<PolicyRenewal, Lo
     List<PolicyRenewal> findByStatus(RenewalStatus status);
 
     /**
+     * Paged renewals in the given status.
+     *
+     * @param status renewal status
+     * @param pageable pagination
+     * @return page of renewals
+     */
+    Page<PolicyRenewal> findByStatus(RenewalStatus status, Pageable pageable);
+
+    /**
      * Paged listing of a customer's renewals across all their policies.
      *
      * @param customerId owning user id

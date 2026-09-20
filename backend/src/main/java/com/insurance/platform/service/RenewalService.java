@@ -88,6 +88,16 @@ public class RenewalService {
             RenewalResponse dto = new RenewalResponse();
             dto.setPolicyId(policy.getId());
             dto.setPolicyNumber(policy.getPolicyNumber());
+            dto.setPolicyName(policy.getPolicyName());
+            dto.setExpiryDate(policy.getExpiryDate());
+            dto.setPremiumAmount(policy.getPremiumAmount());
+            if (policy.getCustomer() != null) {
+                dto.setHolderName(policy.getCustomer().getFirstName()
+                        + " " + policy.getCustomer().getLastName());
+            }
+            if (policy.getInsuranceCompany() != null) {
+                dto.setCompanyName(policy.getInsuranceCompany().getName());
+            }
             dto.setPreviousExpiryDate(policy.getExpiryDate());
             dto.setStatus(RenewalStatus.PENDING.name());
             dto.setDaysRemaining(daysRemaining(policy.getExpiryDate()));
@@ -115,6 +125,16 @@ public class RenewalService {
             RenewalResponse dto = new RenewalResponse();
             dto.setPolicyId(policy.getId());
             dto.setPolicyNumber(policy.getPolicyNumber());
+            dto.setPolicyName(policy.getPolicyName());
+            dto.setExpiryDate(policy.getExpiryDate());
+            dto.setPremiumAmount(policy.getPremiumAmount());
+            if (policy.getCustomer() != null) {
+                dto.setHolderName(policy.getCustomer().getFirstName()
+                        + " " + policy.getCustomer().getLastName());
+            }
+            if (policy.getInsuranceCompany() != null) {
+                dto.setCompanyName(policy.getInsuranceCompany().getName());
+            }
             dto.setPreviousExpiryDate(policy.getExpiryDate());
             dto.setStatus(RenewalStatus.PENDING.name());
             dto.setDaysRemaining(daysRemaining(policy.getExpiryDate()));

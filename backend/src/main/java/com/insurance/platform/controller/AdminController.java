@@ -7,6 +7,7 @@ import com.insurance.platform.dto.policy.PolicyResponse;
 import com.insurance.platform.dto.policy.PolicySearchParams;
 import com.insurance.platform.dto.renewal.RenewalResponse;
 import com.insurance.platform.dto.user.UserResponse;
+import com.insurance.platform.exception.BadRequestException;
 import com.insurance.platform.model.enums.Role;
 import com.insurance.platform.service.AdminService;
 import com.insurance.platform.service.UserService;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -47,10 +49,12 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.ok(adminService.dashboardStats()));
     }
 
-    /** Paged users. */
+    /** Paged users, optionally filtered by a name/email search. */
     @GetMapping("/users")
-    public ResponseEntity<ApiResponse<Page<UserResponse>>> users(@ParameterObject Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.ok(adminService.users(pageable)));
+    public ResponseEntity<ApiResponse<Page<UserResponse>>> users(
+            @RequestParam(required = false) String search,
+            @ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.ok(adminService.users(search, pageable)));
     }
 
     /** Paged policies with optional filters. */
@@ -60,10 +64,12 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.ok(adminService.policies(params, pageable)));
     }
 
-    /** Paged renewals. */
+    /** Paged renewals, optionally filtered by status. */
     @GetMapping("/renewals")
-    public ResponseEntity<ApiResponse<Page<RenewalResponse>>> renewals(@ParameterObject Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.ok(adminService.renewals(pageable)));
+    public ResponseEntity<ApiResponse<Page<RenewalResponse>>> renewals(
+            @RequestParam(required = false) String status,
+            @ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.ok(adminService.renewals(status, pageable)));
     }
 
     /** Paged audit logs. */
@@ -72,7 +78,7 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.ok(adminService.auditLogs(pageable)));
     }
 
-    /** Changes a user's role. */
+    /** Changes a user's role. Accepts ADMIN/CUSTOMER (or ROLE_*-prefixed) values. */
     @PutMapping("/users/{id}/role")
     public ResponseEntity<ApiResponse<UserResponse>> updateRole(@PathVariable Long id,
                                                                 @RequestBody Map<String, String> body) {
@@ -80,10 +86,14 @@ public class AdminController {
         String raw = body != null ? body.get("role") : null;
         if (raw != null && !raw.isBlank()) {
             String normalized = raw.trim().toUpperCase();
-            if (!normalized.startsWith("ROLE_")) {
-                normalized = "ROLE_" + normalized;
+            if ("ADMIN".equals(normalized) || "ROLE_ADMIN".equals(normalized)) {
+                role = Role.ROLE_ADMIN;
+            } else if ("CUSTOMER".equals(normalized) || "USER".equals(normalized)
+                    || "ROLE_CUSTOMER".equals(normalized)) {
+                role = Role.ROLE_CUSTOMER;
+            } else {
+                throw new BadRequestException("Invalid role: " + raw);
             }
-            role = Role.valueOf(normalized);
         }
         return ResponseEntity.ok(ApiResponse.ok("Role updated", userService.setRole(id, role)));
     }

@@ -7,6 +7,23 @@ import EmptyState from '../../components/EmptyState.jsx';
 import StatusBadge from '../../components/StatusBadge.jsx';
 import Pagination from '../../components/Pagination.jsx';
 
+function shortRole(role) {
+  if (!role) return 'CUSTOMER';
+  const r = String(role).toUpperCase();
+  if (r === 'ROLE_ADMIN' || r === 'ADMIN') return 'ADMIN';
+  return 'CUSTOMER';
+}
+
+function fullName(u) {
+  const name = [u.firstName, u.lastName].filter(Boolean).join(' ').trim();
+  return name || u.name || '—';
+}
+
+function enabledOf(u) {
+  if (typeof u.enabled === 'boolean') return u.enabled;
+  return (u.status || 'ENABLED') === 'ENABLED';
+}
+
 export default function AdminUsers() {
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(0);
@@ -39,18 +56,19 @@ export default function AdminUsers() {
     setNotice('');
     try {
       await adminService.updateUserRole(u.id, role);
-      setItems((l) => l.map((x) => (x.id === u.id ? { ...x, role } : x)));
+      setItems((l) => l.map((x) => (x.id === u.id ? { ...x, role: role === 'ADMIN' ? 'ROLE_ADMIN' : 'ROLE_CUSTOMER' } : x)));
       setNotice(`Role updated for ${u.email}.`);
     } catch (err) {
       setError(getErrorMessage(err, 'Failed to update role.'));
     }
   };
 
-  const changeStatus = async (u, status) => {
+  const changeStatus = async (u) => {
     setNotice('');
     try {
-      await adminService.updateUserStatus(u.id, status);
-      setItems((l) => l.map((x) => (x.id === u.id ? { ...x, status } : x)));
+      const next = !enabledOf(u);
+      await adminService.updateUserStatus(u.id, next);
+      setItems((l) => l.map((x) => (x.id === u.id ? { ...x, enabled: next } : x)));
       setNotice(`Status updated for ${u.email}.`);
     } catch (err) {
       setError(getErrorMessage(err, 'Failed to update status.'));
@@ -94,17 +112,17 @@ export default function AdminUsers() {
                 <tbody>
                   {items.map((u) => (
                     <tr key={u.id}>
-                      <td>{u.name || '—'}</td>
+                      <td>{fullName(u)}</td>
                       <td>{u.email}</td>
-                      <td><StatusBadge status={u.role} /></td>
-                      <td><StatusBadge status={u.status || 'ENABLED'} /></td>
+                      <td><StatusBadge status={shortRole(u.role)} /></td>
+                      <td><StatusBadge status={enabledOf(u) ? 'ENABLED' : 'DISABLED'} /></td>
                       <td className="text-end text-nowrap">
-                        <select className="form-select form-select-sm d-inline-block w-auto me-1" value={u.role || 'USER'} onChange={(e) => changeRole(u, e.target.value)}>
-                          <option value="USER">USER</option>
+                        <select className="form-select form-select-sm d-inline-block w-auto me-1" value={shortRole(u.role)} onChange={(e) => changeRole(u, e.target.value)}>
+                          <option value="CUSTOMER">CUSTOMER</option>
                           <option value="ADMIN">ADMIN</option>
                         </select>
-                        <button className="btn btn-sm btn-outline-secondary me-1" onClick={() => changeStatus(u, (u.status || 'ENABLED') === 'ENABLED' ? 'DISABLED' : 'ENABLED')}>
-                          {(u.status || 'ENABLED') === 'ENABLED' ? 'Disable' : 'Enable'}
+                        <button className="btn btn-sm btn-outline-secondary me-1" onClick={() => changeStatus(u)}>
+                          {enabledOf(u) ? 'Disable' : 'Enable'}
                         </button>
                         <button className="btn btn-sm btn-outline-danger" onClick={() => removeUser(u)}>Delete</button>
                       </td>

@@ -11,6 +11,8 @@ public class DashboardSummaryResponse {
     private long activePolicies;
     private long expiredPolicies;
     private long expiringSoon;
+    private long upcomingRenewals;
+    private BigDecimal totalPremium;
     private BigDecimal totalPremiumPaid;
     private BigDecimal totalPendingAmount;
 
@@ -44,6 +46,22 @@ public class DashboardSummaryResponse {
 
     public void setExpiringSoon(long expiringSoon) {
         this.expiringSoon = expiringSoon;
+    }
+
+    public long getUpcomingRenewals() {
+        return upcomingRenewals;
+    }
+
+    public void setUpcomingRenewals(long upcomingRenewals) {
+        this.upcomingRenewals = upcomingRenewals;
+    }
+
+    public BigDecimal getTotalPremium() {
+        return totalPremium;
+    }
+
+    public void setTotalPremium(BigDecimal totalPremium) {
+        this.totalPremium = totalPremium;
     }
 
     public BigDecimal getTotalPremiumPaid() {

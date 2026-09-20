@@ -208,9 +208,14 @@ public class PolicyService {
                 .filter(p -> calculatePolicyStatus(p) == PolicyStatus.ACTIVE).count());
         summary.setExpiredPolicies(policies.stream()
                 .filter(p -> calculatePolicyStatus(p) == PolicyStatus.EXPIRED).count());
-        summary.setExpiringSoon(policies.stream()
+        long expiringSoonCount = policies.stream()
                 .filter(p -> calculatePolicyStatus(p) == PolicyStatus.EXPIRING_SOON)
-                .count());
+                .count();
+        summary.setExpiringSoon(expiringSoonCount);
+        summary.setUpcomingRenewals(expiringSoonCount);
+        summary.setTotalPremium(policies.stream()
+                .map(p -> p.getPremiumAmount() != null ? p.getPremiumAmount() : BigDecimal.ZERO)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
 
         BigDecimal paid = BigDecimal.ZERO;
         BigDecimal pending = BigDecimal.ZERO;

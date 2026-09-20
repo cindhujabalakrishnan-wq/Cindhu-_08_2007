@@ -80,7 +80,7 @@ export default function AdminDashboard() {
                 <ul className="list-group list-group-flush">
                   {recentPolicies.slice(0, 5).map((p) => (
                     <li key={p.id} className="list-group-item px-0 d-flex justify-content-between">
-                      <span>{p.policyNumber || `#${p.id}`} — {p.holderName || ''}</span>
+                      <span>{p.policyNumber || `#${p.id}`} — {p.customerEmail || ''}</span>
                       <StatusBadge status={p.status} />
                     </li>
                   ))}
@@ -97,8 +97,8 @@ export default function AdminDashboard() {
                 <ul className="list-group list-group-flush">
                   {recentUsers.slice(0, 5).map((u) => (
                     <li key={u.id} className="list-group-item px-0 d-flex justify-content-between">
-                      <span>{u.name || u.email}</span>
-                      <StatusBadge status={u.role || u.status} />
+                      <span>{[u.firstName, u.lastName].filter(Boolean).join(' ') || u.email}</span>
+                      <StatusBadge status={u.role ? String(u.role).replace(/^ROLE_/, '') : u.status} />
                     </li>
                   ))}
                 </ul>

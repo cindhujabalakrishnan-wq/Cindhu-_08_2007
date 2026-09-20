@@ -1,5 +1,11 @@
 package com.insurance.platform.dto.admin;
 
+import com.insurance.platform.dto.policy.PolicyResponse;
+import com.insurance.platform.dto.renewal.RenewalResponse;
+import com.insurance.platform.dto.user.UserResponse;
+import java.math.BigDecimal;
+import java.util.List;
+
 /**
  * Platform-wide statistics for the admin dashboard.
  */
@@ -9,10 +15,15 @@ public class DashboardStatsResponse {
     private long totalCustomers;
     private long totalPolicies;
     private long activePolicies;
+    private long expiringSoon;
     private long expiredPolicies;
+    private BigDecimal totalPremium;
     private long pendingRenewals;
     private long overduePayments;
     private long unreadNotifications;
+    private List<PolicyResponse> recentPolicies;
+    private List<UserResponse> recentUsers;
+    private List<RenewalResponse> upcomingRenewals;
 
     public long getTotalUsers() {
         return totalUsers;
@@ -54,6 +65,22 @@ public class DashboardStatsResponse {
         this.expiredPolicies = expiredPolicies;
     }
 
+    public long getExpiringSoon() {
+        return expiringSoon;
+    }
+
+    public void setExpiringSoon(long expiringSoon) {
+        this.expiringSoon = expiringSoon;
+    }
+
+    public BigDecimal getTotalPremium() {
+        return totalPremium;
+    }
+
+    public void setTotalPremium(BigDecimal totalPremium) {
+        this.totalPremium = totalPremium;
+    }
+
     public long getPendingRenewals() {
         return pendingRenewals;
     }
@@ -76,5 +103,29 @@ public class DashboardStatsResponse {
 
     public void setUnreadNotifications(long unreadNotifications) {
         this.unreadNotifications = unreadNotifications;
+    }
+
+    public List<PolicyResponse> getRecentPolicies() {
+        return recentPolicies;
+    }
+
+    public void setRecentPolicies(List<PolicyResponse> recentPolicies) {
+        this.recentPolicies = recentPolicies;
+    }
+
+    public List<UserResponse> getRecentUsers() {
+        return recentUsers;
+    }
+
+    public void setRecentUsers(List<UserResponse> recentUsers) {
+        this.recentUsers = recentUsers;
+    }
+
+    public List<RenewalResponse> getUpcomingRenewals() {
+        return upcomingRenewals;
+    }
+
+    public void setUpcomingRenewals(List<RenewalResponse> upcomingRenewals) {
+        this.upcomingRenewals = upcomingRenewals;
     }
 }

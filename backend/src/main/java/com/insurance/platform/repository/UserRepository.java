@@ -36,4 +36,18 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return users with the role
      */
     List<User> findByRole(Role role);
+
+    /**
+     * Searches users by email, first name or last name (case-insensitive).
+     *
+     * @param email search fragment matched against email
+     * @param firstName search fragment matched against first name
+     * @param lastName search fragment matched against last name
+     * @param pageable pagination
+     * @return matching users
+     */
+    org.springframework.data.domain.Page<User>
+            findByEmailContainingIgnoreCaseOrFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
+                    String email, String firstName, String lastName,
+                    org.springframework.data.domain.Pageable pageable);
 }

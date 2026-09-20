@@ -23,6 +23,16 @@ public class RenewalMapper {
         if (renewal.getPolicy() != null) {
             dto.setPolicyId(renewal.getPolicy().getId());
             dto.setPolicyNumber(renewal.getPolicy().getPolicyNumber());
+            dto.setPolicyName(renewal.getPolicy().getPolicyName());
+            dto.setExpiryDate(renewal.getPolicy().getExpiryDate());
+            dto.setPremiumAmount(renewal.getPolicy().getPremiumAmount());
+            if (renewal.getPolicy().getCustomer() != null) {
+                dto.setHolderName(renewal.getPolicy().getCustomer().getFirstName()
+                        + " " + renewal.getPolicy().getCustomer().getLastName());
+            }
+            if (renewal.getPolicy().getInsuranceCompany() != null) {
+                dto.setCompanyName(renewal.getPolicy().getInsuranceCompany().getName());
+            }
         }
         dto.setPreviousExpiryDate(renewal.getPreviousExpiryDate());
         dto.setRenewalDate(renewal.getRequestedAt() != null

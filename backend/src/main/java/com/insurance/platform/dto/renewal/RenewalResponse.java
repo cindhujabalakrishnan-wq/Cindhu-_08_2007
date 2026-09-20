@@ -11,6 +11,11 @@ public class RenewalResponse {
     private Long id;
     private Long policyId;
     private String policyNumber;
+    private String policyName;
+    private String holderName;
+    private String companyName;
+    private LocalDate expiryDate;
+    private BigDecimal premiumAmount;
     private LocalDate previousExpiryDate;
     private LocalDate renewalDate;
     private LocalDate newExpiryDate;
@@ -41,6 +46,46 @@ public class RenewalResponse {
 
     public void setPolicyNumber(String policyNumber) {
         this.policyNumber = policyNumber;
+    }
+
+    public String getPolicyName() {
+        return policyName;
+    }
+
+    public void setPolicyName(String policyName) {
+        this.policyName = policyName;
+    }
+
+    public String getHolderName() {
+        return holderName;
+    }
+
+    public void setHolderName(String holderName) {
+        this.holderName = holderName;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public LocalDate getExpiryDate() {
+        return expiryDate;
+    }
+
+    public void setExpiryDate(LocalDate expiryDate) {
+        this.expiryDate = expiryDate;
+    }
+
+    public BigDecimal getPremiumAmount() {
+        return premiumAmount;
+    }
+
+    public void setPremiumAmount(BigDecimal premiumAmount) {
+        this.premiumAmount = premiumAmount;
     }
 
     public LocalDate getPreviousExpiryDate() {

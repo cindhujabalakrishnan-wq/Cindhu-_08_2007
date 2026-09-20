@@ -73,10 +73,15 @@ export function getErrorMessage(error, fallback = 'Something went wrong. Please 
 }
 
 /**
- * Normalize list responses: supports plain arrays, Spring Page
+ * Normalize list responses. Unwraps the backend ApiResponse envelope
+ * ({success, message, data}) first, then supports plain arrays, Spring Page
  * ({content, totalElements, totalPages, number}), and {data, total} shapes.
  */
-export function normalizeList(data, page = 0) {
+export function normalizeList(body, page = 0) {
+  const data = body && typeof body === 'object' && !Array.isArray(body) && body.data !== undefined
+    && body.content === undefined && body.items === undefined
+    ? body.data
+    : body;
   if (Array.isArray(data)) {
     return { items: data, totalElements: data.length, totalPages: 1, page };
   }

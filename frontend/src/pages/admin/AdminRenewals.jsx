@@ -47,9 +47,11 @@ export default function AdminRenewals() {
           <div className="col-md-4">
             <select className="form-select" value={status} onChange={(e) => { setStatus(e.target.value); setPage(0); }}>
               <option value="">All statuses</option>
-              <option value="UPCOMING">Upcoming</option>
+              <option value="PENDING">Pending</option>
+              <option value="APPROVED">Approved</option>
               <option value="COMPLETED">Completed</option>
-              <option value="OVERDUE">Overdue</option>
+              <option value="REJECTED">Rejected</option>
+              <option value="CANCELLED">Cancelled</option>
             </select>
           </div>
         </div>
@@ -67,15 +69,16 @@ export default function AdminRenewals() {
             <div className="table-responsive">
               <table className="table table-hover align-middle mb-0">
                 <thead className="table-light">
-                  <tr><th>Policy</th><th>Holder</th><th>Owner</th><th>Expiry</th><th>Status</th></tr>
+                  <tr><th>Policy</th><th>Holder</th><th>Company</th><th>Expiry</th><th>Premium</th><th>Status</th></tr>
                 </thead>
                 <tbody>
                   {items.map((r) => (
                     <tr key={r.id || r.policyId}>
                       <td>{r.policyNumber || r.policy?.policyNumber || `#${r.policyId || ''}`}</td>
                       <td>{r.holderName || r.policy?.holderName || '—'}</td>
-                      <td>{r.ownerEmail || r.policy?.ownerEmail || '—'}</td>
-                      <td>{formatDate(r.expiryDate || r.policy?.expiryDate)}</td>
+                      <td>{r.companyName || r.policy?.companyName || '—'}</td>
+                      <td>{formatDate(r.expiryDate || r.previousExpiryDate || r.policy?.expiryDate)}</td>
+                      <td>{Number(r.premiumAmount ?? r.renewalPremium) ? Number(r.premiumAmount ?? r.renewalPremium).toLocaleString() : '—'}</td>
                       <td><StatusBadge status={r.status} /></td>
                     </tr>
                   ))}
