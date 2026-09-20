@@ -18,6 +18,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -78,6 +80,7 @@ public class InsurancePolicy {
 
     /** Business line of this policy. */
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(nullable = false, length = 30)
     private PolicyCategory category;
 
@@ -95,6 +98,7 @@ public class InsurancePolicy {
 
     /** How often the premium is payable. */
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "premium_frequency", length = 30)
     private PremiumFrequency premiumFrequency;
 
@@ -104,6 +108,7 @@ public class InsurancePolicy {
 
     /** Current lifecycle state. */
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(nullable = false, length = 30)
     private PolicyStatus status;
 
