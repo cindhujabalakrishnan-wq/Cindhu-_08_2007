@@ -14,16 +14,16 @@ spring:
   flyway:
     enabled: true
   mail:
-    host: ${MAIL_HOST:?MAIL_HOST must be set}
+    host: ${MAIL_HOST:}
     port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:?MAIL_USERNAME must be set}
-    password: ${MAIL_PASSWORD:?MAIL_PASSWORD must be set}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
     properties:
       mail:
         smtp:
-          auth: true
+          auth: false
           starttls:
-            enable: true
+            enable: false
 
 logging:
   level:
