@@ -1,0 +1,36 @@
+# Zero-install local demo profile (no MySQL needed).
+# Run with: ./mvnw spring-boot:run -Dspring-boot.run.profiles=h2demo
+# Production/default profiles still use MySQL 8 + Flyway (see application.yml).
+spring:
+  datasource:
+    url: jdbc:h2:mem:insurance;DB_CLOSE_DELAY=-1;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    open-in-view: false
+  flyway:
+    enabled: false
+  mail:
+    host: localhost
+    port: 1025
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:local-demo-only-secret-not-for-production-0123456789abcdef0123456789}
+    expiration-ms: ${JWT_EXPIRATION:86400000}
+  file:
+    storage-path: ${FILE_STORAGE_PATH:./uploads}
+    max-size: ${APP_FILE_MAX_SIZE:10MB}
+  frontend-url: ${FRONTEND_URL:http://localhost:5173}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+  admin:
+    email: ${ADMIN_EMAIL:admin@insurance.local}
+    password: ${ADMIN_PASSWORD:Admin@123}
+    seed: ${SEED_ADMIN:true}
+  scheduler:
+    cron: ${SCHEDULER_CRON:0 0 8 * * *}
