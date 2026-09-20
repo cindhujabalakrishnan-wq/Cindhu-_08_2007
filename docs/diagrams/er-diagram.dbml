@@ -1,0 +1,183 @@
+// ER diagram for the Insurance Policy Management Platform.
+// Source of truth: backend/src/main/java/com/insurance/platform/model/entity/*.java
+// Render with dbdiagram.io (DBML).
+
+Table users {
+  id bigint [pk, increment]
+  email varchar(255) [not null, unique]
+  password varchar(255) [not null]
+  first_name varchar(100) [not null]
+  last_name varchar(100) [not null]
+  phone varchar(30)
+  role varchar(30) [not null, note: 'ROLE_CUSTOMER | ROLE_ADMIN']
+  enabled boolean [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+Table customer_profiles {
+  id bigint [pk, increment]
+  user_id bigint [not null, unique]
+  date_of_birth date
+  gender varchar(30)
+  address varchar(255)
+  city varchar(100)
+  state varchar(100)
+  postal_code varchar(20)
+  country varchar(100)
+  occupation varchar(100)
+  annual_income decimal(15,2)
+  id_proof_type varchar(50)
+  id_proof_number varchar(100)
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+Table insurance_companies {
+  id bigint [pk, increment]
+  name varchar(200) [not null]
+  code varchar(50) [not null, unique]
+  contact_email varchar(255)
+  contact_phone varchar(30)
+  address varchar(500)
+  website varchar(255)
+  active boolean [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+Table policy_types {
+  id bigint [pk, increment]
+  name varchar(200) [not null]
+  code varchar(50) [not null, unique]
+  category varchar(30) [not null, note: 'LIFE | HEALTH | AUTO | HOME | TRAVEL | BUSINESS']
+  description text
+  min_coverage decimal(15,2)
+  max_coverage decimal(15,2)
+  base_premium decimal(15,2)
+  active boolean [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+Table insurance_policies {
+  id bigint [pk, increment]
+  policy_number varchar(50) [not null, unique]
+  customer_id bigint [not null]
+  insurance_company_id bigint [not null]
+  policy_type_id bigint [not null]
+  policy_name varchar(200) [not null]
+  category varchar(30) [not null]
+  start_date date [not null]
+  expiry_date date [not null]
+  premium_amount decimal(15,2) [not null]
+  premium_frequency varchar(30)
+  coverage_amount decimal(15,2)
+  status varchar(30) [not null, note: 'ACTIVE | EXPIRED | PENDING_RENEWAL | RENEWED | CANCELLED']
+  nominee_name varchar(255)
+  nominee_contact varchar(100)
+  notes text
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+Table premium_payments {
+  id bigint [pk, increment]
+  policy_id bigint [not null]
+  amount decimal(15,2) [not null]
+  payment_date date
+  due_date date
+  payment_method varchar(30)
+  transaction_reference varchar(100)
+  status varchar(30) [not null, note: 'PENDING | COMPLETED | FAILED | REFUNDED | OVERDUE']
+  notes text
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+Table policy_renewals {
+  id bigint [pk, increment]
+  policy_id bigint [not null]
+  previous_expiry_date date
+  new_expiry_date date
+  renewal_premium decimal(15,2)
+  status varchar(30) [not null, note: 'PENDING | APPROVED | REJECTED | COMPLETED']
+  requested_at timestamp
+  processed_at timestamp
+  remarks text
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+Table policy_documents {
+  id bigint [pk, increment]
+  policy_id bigint [not null]
+  uploaded_by_id bigint
+  document_type varchar(30) [not null]
+  file_name varchar(255) [not null]
+  original_file_name varchar(255)
+  file_path varchar(1024) [not null]
+  content_type varchar(100)
+  file_size bigint
+  extracted_text text [note: 'heuristic PDF extraction output']
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+Table notifications {
+  id bigint [pk, increment]
+  user_id bigint [not null]
+  type varchar(30) [not null, note: 'POLICY_EXPIRY | PAYMENT_* | RENEWAL | DOCUMENT | SYSTEM']
+  title varchar(255) [not null]
+  message text [not null]
+  related_policy_id bigint
+  is_read boolean [not null]
+  read_at timestamp
+  created_at timestamp [not null]
+}
+
+Table audit_logs {
+  id bigint [pk, increment]
+  user_id bigint [note: 'nullable, system actions have no user']
+  action varchar(100) [not null]
+  entity_type varchar(100)
+  entity_id varchar(100)
+  details text
+  ip_address varchar(45)
+  created_at timestamp [not null]
+}
+
+// ---- Relationships (FK + cardinality) ----
+Ref "customer_profiles.user_id > users.id" {
+  // one user has at most one profile (1:1)
+}
+Ref "insurance_policies.customer_id > users.id" {
+  // one user owns many policies (1:N)
+}
+Ref "insurance_policies.insurance_company_id > insurance_companies.id" {
+  // one company underwrites many policies (1:N)
+}
+Ref "insurance_policies.policy_type_id > policy_types.id" {
+  // one policy type is sold as many policies (1:N)
+}
+Ref "premium_payments.policy_id > insurance_policies.id" {
+  // one policy has many payments (1:N)
+}
+Ref "policy_renewals.policy_id > insurance_policies.id" {
+  // one policy has many renewal requests (1:N)
+}
+Ref "policy_documents.policy_id > insurance_policies.id" {
+  // one policy has many documents (1:N)
+}
+Ref "policy_documents.uploaded_by_id > users.id" {
+  // one user uploads many documents (1:N, nullable)
+}
+Ref "notifications.user_id > users.id" {
+  // one user receives many notifications (1:N)
+}
+Ref "notifications.related_policy_id > insurance_policies.id" {
+  // optional link: many notifications may reference one policy (N:1, nullable)
+}
+Ref "audit_logs.user_id > users.id" {
+  // optional link: many audit entries may reference one user (N:1, nullable, no DB FK)
+}
