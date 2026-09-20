@@ -35,6 +35,13 @@ Thumbs.db
 
 # Uploads / local file storage
 uploads/
+backend/uploads/
+
+# Local embedded/file databases (recreated by seeders)
+*.mv.db
+*.trace.db
+data/
+backend/data/
 
 # Misc
 compile-errors.txt
