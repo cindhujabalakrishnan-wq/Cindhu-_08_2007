@@ -3,38 +3,55 @@ import authService from '../services/authService.js';
 
 const AuthContext = createContext(null);
 
+function normalizeRole(role) {
+  if (!role) return null;
+  return String(role).startsWith('ROLE_') ? String(role).slice(5) : String(role);
+}
+
+function normalizeUser(user) {
+  if (!user) return null;
+  return { ...user, role: normalizeRole(user.role) };
+}
+
+function readStoredToken() {
+  const raw = localStorage.getItem('token');
+  return raw && raw !== 'undefined' && raw !== 'null' ? raw : null;
+}
+
 function readStoredUser() {
   try {
     const raw = localStorage.getItem('user');
-    return raw ? JSON.parse(raw) : null;
+    return normalizeUser(raw ? JSON.parse(raw) : null);
   } catch {
     return null;
   }
 }
 
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(() => localStorage.getItem('token'));
+  const [token, setToken] = useState(() => readStoredToken());
   const [user, setUser] = useState(() => readStoredUser());
   const [loading, setLoading] = useState(true);
 
   const persist = (nextToken, nextUser) => {
-    setToken(nextToken);
-    setUser(nextUser);
+    const cleanUser = normalizeUser(nextUser);
+    setToken(nextToken || null);
+    setUser(cleanUser);
     if (nextToken) localStorage.setItem('token', nextToken);
     else localStorage.removeItem('token');
-    if (nextUser) localStorage.setItem('user', JSON.stringify(nextUser));
+    if (cleanUser) localStorage.setItem('user', JSON.stringify(cleanUser));
     else localStorage.removeItem('user');
   };
 
   const refreshMe = useCallback(async () => {
-    const stored = localStorage.getItem('token');
+    const stored = readStoredToken();
     if (!stored) {
+      persist(null, null);
       setLoading(false);
       return null;
     }
     try {
       const me = await authService.me();
-      persist(localStorage.getItem('token'), me);
+      persist(stored, me);
       return me;
     } catch {
       persist(null, null);
@@ -50,7 +67,11 @@ export function AuthProvider({ children }) {
 
   const login = useCallback(async (credentials) => {
     const data = await authService.login(credentials);
-    persist(data.token || data.accessToken, data.user || data);
+    const token = data?.token || data?.accessToken;
+    if (!token) {
+      throw new Error(data?.message || 'Login failed. Check your credentials.');
+    }
+    persist(token, data.user || data);
     return data;
   }, []);
 
