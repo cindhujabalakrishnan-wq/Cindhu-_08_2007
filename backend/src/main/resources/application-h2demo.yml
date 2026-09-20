@@ -3,13 +3,13 @@
 # Production/default profiles still use MySQL 8 + Flyway (see application.yml).
 spring:
   datasource:
-    url: jdbc:h2:mem:insurance;DB_CLOSE_DELAY=-1;MODE=MySQL
+    url: jdbc:h2:file:./data/insurancedb;MODE=MySQL
     driver-class-name: org.h2.Driver
     username: sa
     password:
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: false
     open-in-view: false
   flyway:
@@ -32,5 +32,7 @@ app:
     email: ${ADMIN_EMAIL:admin@insurance.local}
     password: ${ADMIN_PASSWORD:Admin@123}
     seed: ${SEED_ADMIN:true}
+  demo:
+    seed: ${DEMO_SEED:true}
   scheduler:
     cron: ${SCHEDULER_CRON:0 0 8 * * *}
