@@ -1,0 +1,20 @@
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+// Dev-server proxy: any relative `/api/*` call is forwarded to Spring Boot.
+// In production, set VITE_API_BASE_URL to the backend origin (see .env.example).
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: process.env.VITE_API_BASE_URL || 'http://localhost:8080',
+        changeOrigin: true,
+      },
+    },
+  },
+  preview: {
+    port: 5173,
+  },
+});
