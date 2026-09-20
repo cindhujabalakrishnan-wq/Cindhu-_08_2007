@@ -31,13 +31,13 @@ public class DataSeeder implements CommandLineRunner {
     private final PolicyTypeRepository policyTypeRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${SEED_ADMIN:false}")
+    @Value("${app.admin.seed:${SEED_ADMIN:false}}")
     private boolean seedAdmin;
 
-    @Value("${ADMIN_EMAIL:admin@insurance.local}")
+    @Value("${app.admin.email:${ADMIN_EMAIL:admin@insurance.local}}")
     private String adminEmail;
 
-    @Value("${ADMIN_PASSWORD:}")
+    @Value("${app.admin.password:${ADMIN_PASSWORD:}}")
     private String adminPassword;
 
     public DataSeeder(UserRepository userRepository,
