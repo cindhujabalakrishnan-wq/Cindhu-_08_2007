@@ -27,6 +27,8 @@ services:
         sync: false
       - key: SEED_ADMIN
         value: "true"
+      - key: DEMO_SEED
+        value: "true"
       - key: FILE_STORAGE_PATH
         value: /var/data/uploads
       - key: APP_FILE_MAX_SIZE
